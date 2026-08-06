@@ -1,0 +1,16 @@
+# Environment
+.env
+
+# WordPress core (installed at container runtime via the wordpress image, not vendored)
+wp-content/uploads/*
+!wp-content/uploads/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Composer (if added later inside the plugin)
+vendor/
+composer.lock

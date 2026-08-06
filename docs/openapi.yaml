@@ -1,0 +1,558 @@
+openapi: 3.0.3
+info:
+  title: LIMAK Headless API
+  version: "1.0.0"
+  description: |
+    Public, read-only REST API for the LIMAK React frontend, served by the
+    `limak-headless` WordPress plugin.
+
+    **This is the only API contract the frontend should depend on.** WordPress
+    internals — ACF field names, meta keys, taxonomy slugs, post IDs vs.
+    slugs — are intentionally hidden behind this contract. Backend changes
+    (e.g. migrating the Gallery field from post meta to ACF PRO) must not
+    change these response shapes.
+
+    Every endpoint here is `GET`-only. There is no public write access
+    anywhere in this API; content is managed exclusively through the
+    WordPress admin.
+servers:
+  - url: "{siteUrl}/wp-json/limak/v1"
+    description: LIMAK Headless API
+    variables:
+      siteUrl:
+        default: http://localhost:8080
+        description: Base URL of the WordPress installation.
+
+security: []
+
+tags:
+  - name: Products
+  - name: Projects
+  - name: Collections
+  - name: Blog
+  - name: Search
+  - name: Navigation
+  - name: Homepage
+
+paths:
+  /products:
+    get:
+      tags: [Products]
+      operationId: listProducts
+      summary: List products
+      description: Paginated, filterable list of products. Returns the lightweight summary shape.
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: category
+          in: query
+          description: Filter by one or more product category slugs (comma-separated).
+          schema: { type: string }
+          example: living-room,bedroom
+        - name: material
+          in: query
+          description: Filter by one or more material slugs (comma-separated).
+          schema: { type: string }
+          example: oak
+        - name: color
+          in: query
+          description: Filter by one or more color slugs (comma-separated).
+          schema: { type: string }
+          example: walnut-brown
+        - name: collection
+          in: query
+          description: Filter by collection slug.
+          schema: { type: string }
+          example: modern-living
+        - name: featured
+          in: query
+          description: Only return featured products.
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: A page of products.
+          headers:
+            X-WP-Total: { $ref: '#/components/headers/X-WP-Total' }
+            X-WP-TotalPages: { $ref: '#/components/headers/X-WP-TotalPages' }
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ProductSummary' }
+              example:
+                - id: 21
+                  title: Aria Lounge Chair
+                  slug: aria-lounge-chair
+                  heroImage: { attachment_id: 7, url: "http://localhost:8080/wp-content/uploads/2026/07/hero.jpg", alt: "Aria Lounge Chair hero shot", width: 800, height: 600 }
+                  shortDescription: A sculptural lounge chair in solid oak and leather.
+                  category: [{ id: 2, name: Living Room, slug: living-room }]
+                  materials: [{ id: 3, name: Oak, slug: oak }]
+                  colors: []
+                  designer: Jane Doe
+                  featured: true
+                  order: 0
+
+  /products/{slug}:
+    get:
+      tags: [Products]
+      operationId: getProduct
+      summary: Get a single product
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: The product.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductDetail' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{slug}/related:
+    get:
+      tags: [Products]
+      operationId: getRelatedProducts
+      summary: Get related products
+      description: Products sharing a category with the given product; falls back to products in the same collection if no category overlap exists.
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+        - name: limit
+          in: query
+          schema: { type: integer, default: 4, minimum: 1, maximum: 20 }
+      responses:
+        '200':
+          description: Related products.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ProductSummary' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects:
+    get:
+      tags: [Projects]
+      operationId: listProjects
+      summary: List projects
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: featured
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: A page of projects.
+          headers:
+            X-WP-Total: { $ref: '#/components/headers/X-WP-Total' }
+            X-WP-TotalPages: { $ref: '#/components/headers/X-WP-TotalPages' }
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ProjectSummary' }
+
+  /projects/{slug}:
+    get:
+      tags: [Projects]
+      operationId: getProject
+      summary: Get a single project
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: The project.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProjectDetail' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /collections:
+    get:
+      tags: [Collections]
+      operationId: listCollections
+      summary: List collections
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: A page of collections.
+          headers:
+            X-WP-Total: { $ref: '#/components/headers/X-WP-Total' }
+            X-WP-TotalPages: { $ref: '#/components/headers/X-WP-TotalPages' }
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CollectionSummary' }
+
+  /collections/{slug}:
+    get:
+      tags: [Collections]
+      operationId: getCollection
+      summary: Get a single collection
+      description: Includes every published product belonging to this collection.
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: The collection.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CollectionDetail' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /blog:
+    get:
+      tags: [Blog]
+      operationId: listBlogPosts
+      summary: List blog posts
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+        - name: category
+          in: query
+          description: Filter by one or more blog category slugs (comma-separated).
+          schema: { type: string }
+      responses:
+        '200':
+          description: A page of blog posts.
+          headers:
+            X-WP-Total: { $ref: '#/components/headers/X-WP-Total' }
+            X-WP-TotalPages: { $ref: '#/components/headers/X-WP-TotalPages' }
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/PostSummary' }
+
+  /blog/{slug}:
+    get:
+      tags: [Blog]
+      operationId: getBlogPost
+      summary: Get a single blog post
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: The blog post.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PostDetail' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /search:
+    get:
+      tags: [Search]
+      operationId: search
+      summary: Search across products, projects and blog posts
+      description: A single relevance-ranked result set spanning content types, unless narrowed with `type`.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+          example: oak chair
+        - name: type
+          in: query
+          schema: { type: string, enum: [product, project, post] }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20, minimum: 1, maximum: 50 }
+      responses:
+        '200':
+          description: Search results.
+          headers:
+            X-WP-Total: { $ref: '#/components/headers/X-WP-Total' }
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SearchResult' }
+
+  /menu/{location}:
+    get:
+      tags: [Navigation]
+      operationId: getMenu
+      summary: Get a navigation menu as a nested tree
+      description: Resolves the menu assigned to a registered menu location (`primary`, `footer`). Returns an empty array if no menu is assigned.
+      parameters:
+        - name: location
+          in: path
+          required: true
+          schema: { type: string, enum: [primary, footer] }
+      responses:
+        '200':
+          description: The menu tree (empty array if nothing is assigned to this location).
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/MenuItem' }
+
+  /homepage:
+    get:
+      tags: [Homepage]
+      operationId: getHomepage
+      summary: Aggregated homepage payload
+      description: Bundles featured products, featured projects, collections and the latest blog posts in one call.
+      responses:
+        '200':
+          description: Homepage data.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HomepagePayload' }
+
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, default: 1, minimum: 1 }
+    PerPage:
+      name: per_page
+      in: query
+      schema: { type: integer, default: 12, minimum: 1, maximum: 100 }
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema: { type: string }
+
+  headers:
+    X-WP-Total:
+      description: Total number of items matching the query, across all pages.
+      schema: { type: integer }
+    X-WP-TotalPages:
+      description: Total number of pages.
+      schema: { type: integer }
+
+  responses:
+    NotFound:
+      description: No item found for the given slug.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example:
+            code: limak_product_not_found
+            message: Product not found.
+            data: { status: 404 }
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            status: { type: integer }
+
+    Image:
+      type: object
+      nullable: true
+      description: An image resolved from the WordPress Media Library. Null if no image is set.
+      properties:
+        attachment_id: { type: integer }
+        url: { type: string, format: uri }
+        alt: { type: string }
+        width: { type: integer, nullable: true }
+        height: { type: integer, nullable: true }
+
+    File:
+      type: object
+      nullable: true
+      description: A downloadable file resolved from the WordPress Media Library. Null if not set.
+      properties:
+        id: { type: integer }
+        url: { type: string, format: uri }
+
+    Term:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+
+    CollectionRef:
+      type: object
+      nullable: true
+      description: Minimal reference to a Collection. Null if the product has no collection.
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+
+    Dimensions:
+      type: object
+      properties:
+        width: { type: number, nullable: true }
+        height: { type: number, nullable: true }
+        depth: { type: number, nullable: true }
+        unit: { type: string, example: cm }
+
+    Area:
+      type: object
+      properties:
+        value: { type: number, nullable: true }
+        unit: { type: string, example: sqm }
+
+    ProductSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        heroImage: { $ref: '#/components/schemas/Image' }
+        shortDescription: { type: string }
+        category:
+          type: array
+          items: { $ref: '#/components/schemas/Term' }
+        materials:
+          type: array
+          items: { $ref: '#/components/schemas/Term' }
+        colors:
+          type: array
+          items: { $ref: '#/components/schemas/Term' }
+        designer: { type: string, nullable: true }
+        featured: { type: boolean }
+        order: { type: integer }
+
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummary'
+        - type: object
+          properties:
+            gallery:
+              type: array
+              items: { $ref: '#/components/schemas/Image' }
+            description: { type: string, description: Rendered HTML. }
+            collection: { $ref: '#/components/schemas/CollectionRef' }
+            woodType: { type: string, nullable: true }
+            fabricType: { type: string, nullable: true }
+            dimensions: { $ref: '#/components/schemas/Dimensions' }
+            year: { type: integer, nullable: true }
+            videoUrl: { type: string, format: uri, nullable: true }
+            modelUrl: { type: string, format: uri, nullable: true, description: URL to a 3D model (e.g. .glb/.gltf). }
+            catalogPdf: { $ref: '#/components/schemas/File' }
+
+    ProjectSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        heroImage: { $ref: '#/components/schemas/Image' }
+        shortDescription: { type: string }
+        location: { type: string, nullable: true }
+        featured: { type: boolean }
+        order: { type: integer }
+
+    ProjectDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProjectSummary'
+        - type: object
+          properties:
+            gallery:
+              type: array
+              items: { $ref: '#/components/schemas/Image' }
+            description: { type: string, description: Rendered HTML. }
+            area: { $ref: '#/components/schemas/Area' }
+            completionDate: { type: string, format: date, nullable: true }
+            architect: { type: string, nullable: true }
+            videoUrl: { type: string, format: uri, nullable: true }
+            productsUsed:
+              type: array
+              items: { $ref: '#/components/schemas/ProductSummary' }
+
+    CollectionSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        coverImage: { $ref: '#/components/schemas/Image' }
+        description: { type: string, description: Rendered HTML. }
+
+    CollectionDetail:
+      allOf:
+        - $ref: '#/components/schemas/CollectionSummary'
+        - type: object
+          properties:
+            products:
+              type: array
+              items: { $ref: '#/components/schemas/ProductSummary' }
+
+    PostSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        image: { $ref: '#/components/schemas/Image' }
+        excerpt: { type: string }
+        date: { type: string, format: date }
+        categories:
+          type: array
+          items: { $ref: '#/components/schemas/Term' }
+
+    PostDetail:
+      allOf:
+        - $ref: '#/components/schemas/PostSummary'
+        - type: object
+          properties:
+            content: { type: string, description: Rendered HTML. }
+            tags:
+              type: array
+              items: { $ref: '#/components/schemas/Term' }
+
+    SearchResult:
+      description: A ProductSummary, ProjectSummary or PostSummary, tagged with its content type.
+      oneOf:
+        - allOf:
+            - type: object
+              properties: { type: { type: string, enum: [product] } }
+            - $ref: '#/components/schemas/ProductSummary'
+        - allOf:
+            - type: object
+              properties: { type: { type: string, enum: [project] } }
+            - $ref: '#/components/schemas/ProjectSummary'
+        - allOf:
+            - type: object
+              properties: { type: { type: string, enum: [post] } }
+            - $ref: '#/components/schemas/PostSummary'
+
+    MenuItem:
+      type: object
+      properties:
+        id: { type: integer }
+        label: { type: string }
+        url: { type: string, format: uri }
+        target: { type: string, nullable: true }
+        children:
+          type: array
+          items: { $ref: '#/components/schemas/MenuItem' }
+
+    HomepagePayload:
+      type: object
+      properties:
+        featuredProducts:
+          type: array
+          items: { $ref: '#/components/schemas/ProductSummary' }
+        featuredProjects:
+          type: array
+          items: { $ref: '#/components/schemas/ProjectSummary' }
+        collections:
+          type: array
+          items: { $ref: '#/components/schemas/CollectionSummary' }
+        latestPosts:
+          type: array
+          items: { $ref: '#/components/schemas/PostSummary' }

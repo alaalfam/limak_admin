@@ -1,0 +1,286 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: LIMAK Headless 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-05 00:00+0000\n"
+"PO-Revision-Date: 2026-08-05 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: limak-headless\n"
+
+#: includes/PostTypes/Product.php:20
+msgid "Product"
+msgstr "محصول"
+
+#: includes/PostTypes/Product.php:24
+msgid "Products"
+msgstr "محصولات"
+
+#: includes/PostTypes/Project.php:20
+msgid "Project"
+msgstr "پروژه"
+
+#: includes/PostTypes/Project.php:24
+msgid "Projects"
+msgstr "پروژه‌ها"
+
+#: includes/PostTypes/Collection.php:25
+#: includes/Fields/Product_Fields.php:38
+msgid "Collection"
+msgstr "مجموعه"
+
+#: includes/PostTypes/Collection.php:29
+msgid "Collections"
+msgstr "مجموعه‌ها"
+
+#: includes/Taxonomies/Color.php:25
+msgid "Color"
+msgstr "رنگ"
+
+#: includes/Taxonomies/Color.php:29
+msgid "Colors"
+msgstr "رنگ‌ها"
+
+#: includes/Taxonomies/Material.php:25
+msgid "Material"
+msgstr "متریال"
+
+#: includes/Taxonomies/Material.php:29
+msgid "Materials"
+msgstr "متریال‌ها"
+
+#: includes/Taxonomies/Product_Category.php:25
+msgid "Product Category"
+msgstr "دسته‌بندی محصول"
+
+#: includes/Taxonomies/Product_Category.php:29
+msgid "Product Categories"
+msgstr "دسته‌بندی‌های محصول"
+
+#: includes/Support/Nav_Menus.php:27
+msgid "Primary Navigation"
+msgstr "منوی اصلی"
+
+#: includes/Support/Nav_Menus.php:28
+msgid "Footer Navigation"
+msgstr "منوی فوتر"
+
+#: includes/REST/Controllers/Blog_Controller.php:111
+msgid "Blog post not found."
+msgstr "پست وبلاگ یافت نشد."
+
+#: includes/Fields/Product_Fields.php:33
+msgid "Product Details"
+msgstr "جزئیات محصول"
+
+#: includes/Fields/Product_Fields.php:47
+msgid "Wood Type"
+msgstr "نوع چوب"
+
+#: includes/Fields/Product_Fields.php:53
+msgid "Fabric Type"
+msgstr "نوع پارچه"
+
+#: includes/Fields/Product_Fields.php:59
+msgid "Dimensions"
+msgstr "ابعاد"
+
+#: includes/Fields/Product_Fields.php:66
+msgid "Width"
+msgstr "عرض"
+
+#: includes/Fields/Product_Fields.php:72
+msgid "Height"
+msgstr "ارتفاع"
+
+#: includes/Fields/Product_Fields.php:78
+msgid "Depth"
+msgstr "عمق"
+
+#: includes/Fields/Product_Fields.php:84
+#: includes/Fields/Project_Fields.php:55
+msgid "Unit"
+msgstr "واحد"
+
+#: includes/Fields/Product_Fields.php:97
+msgid "Designer"
+msgstr "طراح"
+
+#: includes/Fields/Product_Fields.php:103
+msgid "Year"
+msgstr "سال"
+
+#: includes/Fields/Product_Fields.php:109
+#: includes/Fields/Project_Fields.php:90
+msgid "Video URL"
+msgstr "آدرس ویدیو"
+
+#: includes/Fields/Product_Fields.php:115
+msgid "3D Model URL"
+msgstr "آدرس مدل سه‌بعدی"
+
+#: includes/Fields/Product_Fields.php:121
+msgid "Catalog PDF"
+msgstr "کاتالوگ PDF"
+
+#: includes/Fields/Product_Fields.php:129
+#: includes/Fields/Project_Fields.php:96
+msgid "Featured"
+msgstr "ویژه"
+
+#: includes/Security/Rest_Guard.php:47
+msgid "Write access to the REST API requires authentication."
+msgstr "دسترسی نوشتن به REST API نیازمند احراز هویت است."
+
+#: includes/Security/Rest_Guard.php:55
+msgid "The users endpoint is not publicly accessible."
+msgstr "نقطه پایانی کاربران به‌صورت عمومی در دسترس نیست."
+
+#: includes/Fields/Project_Fields.php:31
+msgid "Project Details"
+msgstr "جزئیات پروژه"
+
+#: includes/Fields/Project_Fields.php:36
+msgid "Location"
+msgstr "موقعیت مکانی"
+
+#: includes/Fields/Project_Fields.php:42
+msgid "Area"
+msgstr "مساحت"
+
+#: includes/Fields/Project_Fields.php:49
+msgid "Value"
+msgstr "مقدار"
+
+#: includes/Fields/Project_Fields.php:68
+msgid "Completion Date"
+msgstr "تاریخ تکمیل"
+
+#: includes/Fields/Project_Fields.php:76
+msgid "Products Used"
+msgstr "محصولات استفاده‌شده"
+
+#: includes/Fields/Project_Fields.php:84
+msgid "Architect"
+msgstr "معمار"
+
+#: includes/REST/Controllers/Collections_Controller.php:100
+msgid "Collection not found."
+msgstr "مجموعه یافت نشد."
+
+#. translators: %s: post type/taxonomy singular label
+#: includes/Support/Post_Type.php:57
+#: includes/Support/Taxonomy.php:72
+msgid "Add New %s"
+msgstr "افزودن %s جدید"
+
+#. translators: %s: post type/taxonomy singular label
+#: includes/Support/Post_Type.php:59
+#: includes/Support/Taxonomy.php:68
+msgid "Edit %s"
+msgstr "ویرایش %s"
+
+#. translators: %s: post type singular label
+#: includes/Support/Post_Type.php:61
+msgid "New %s"
+msgstr "%s جدید"
+
+#. translators: %s: post type singular label
+#: includes/Support/Post_Type.php:63
+msgid "View %s"
+msgstr "مشاهده %s"
+
+#. translators: %s: post type/taxonomy plural label
+#: includes/Support/Post_Type.php:67
+#: includes/Support/Taxonomy.php:64
+msgid "Search %s"
+msgstr "جستجوی %s"
+
+#. translators: %s: post type/taxonomy plural label (lowercase)
+#: includes/Support/Post_Type.php:69
+#: includes/Support/Taxonomy.php:76
+msgid "No %s found."
+msgstr "%s یافت نشد."
+
+#. translators: %s: post type plural label (lowercase)
+#: includes/Support/Post_Type.php:71
+msgid "No %s found in Trash."
+msgstr "%s در سطل زباله یافت نشد."
+
+#. translators: %s: post type/taxonomy plural label
+#: includes/Support/Post_Type.php:73
+#: includes/Support/Taxonomy.php:66
+msgid "All %s"
+msgstr "همه %s"
+
+#: includes/Support/Media/Gallery_Field.php:43
+msgid "Gallery"
+msgstr "گالری"
+
+#: includes/Support/Media/Gallery_Field.php:92
+msgid "Remove image"
+msgstr "حذف تصویر"
+
+#: includes/Support/Media/Gallery_Field.php:102
+msgid "Add Images"
+msgstr "افزودن تصاویر"
+
+#: includes/Support/Media/Gallery_Field.php
+msgid "Select Gallery Images"
+msgstr "انتخاب تصاویر گالری"
+
+#: includes/Support/Media/Gallery_Field.php
+msgid "Add to Gallery"
+msgstr "افزودن به گالری"
+
+#. translators: %s: taxonomy singular label
+#: includes/Support/Taxonomy.php:70
+msgid "Update %s"
+msgstr "به‌روزرسانی %s"
+
+#. translators: %s: taxonomy singular label
+#: includes/Support/Taxonomy.php:74
+msgid "New %s Name"
+msgstr "نام %s جدید"
+
+#: includes/REST/Controllers/Products_Controller.php:141
+#: includes/REST/Controllers/Products_Controller.php:164
+msgid "Product not found."
+msgstr "محصول یافت نشد."
+
+#: includes/REST/Controllers/Products_Controller.php:278
+msgid "Current page of the collection."
+msgstr "صفحه فعلی مجموعه."
+
+#: includes/REST/Controllers/Products_Controller.php:284
+msgid "Maximum number of items to return."
+msgstr "حداکثر تعداد آیتم‌های قابل بازگشت."
+
+#: includes/REST/Controllers/Products_Controller.php:291
+msgid "Filter by one or more product category slugs (comma-separated)."
+msgstr "فیلتر بر اساس یک یا چند اسلاگ دسته‌بندی محصول (جدا شده با کاما)."
+
+#: includes/REST/Controllers/Products_Controller.php:295
+msgid "Filter by one or more material slugs (comma-separated)."
+msgstr "فیلتر بر اساس یک یا چند اسلاگ متریال (جدا شده با کاما)."
+
+#: includes/REST/Controllers/Products_Controller.php:299
+msgid "Filter by one or more color slugs (comma-separated)."
+msgstr "فیلتر بر اساس یک یا چند اسلاگ رنگ (جدا شده با کاما)."
+
+#: includes/REST/Controllers/Products_Controller.php:303
+msgid "Filter by collection slug."
+msgstr "فیلتر بر اساس اسلاگ مجموعه."
+
+#: includes/REST/Controllers/Products_Controller.php:307
+msgid "Only return featured products."
+msgstr "فقط محصولات ویژه بازگردانده شوند."
+
+#: includes/REST/Controllers/Projects_Controller.php:109
+msgid "Project not found."
+msgstr "پروژه یافت نشد."
