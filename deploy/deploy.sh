@@ -2,9 +2,12 @@
 #
 # Deploys limak_admin to the VPS: pulls the latest `main` on the server,
 # rebuilds and restarts just the `wordpress` container via docker compose,
-# then flushes rewrite rules (cheap and idempotent — needed so a newly
-# added custom post type's permalinks work immediately, without a manual
-# step). `db` and `phpmyadmin` are never touched.
+# then re-runs bootstrap.sh (the wpcli service's own default entrypoint) in
+# a throwaway container. Every step in bootstrap.sh is idempotent — it's
+# not just first-install setup, it also seeds things like default product
+# categories, so re-running it on every deploy is what keeps that in sync
+# automatically instead of needing a manual one-off command each time
+# something new is added there. `db` and `phpmyadmin` are never touched.
 #
 # Requires: SSH key access to the VPS (deploy@185.10.75.150) already set
 # up — same host as limak_website's deploy.sh, but this repo uses its own
@@ -50,11 +53,8 @@ docker compose -f docker-compose.prod.yml build wordpress
 echo "==> Restarting wordpress container..."
 docker compose -f docker-compose.prod.yml up -d --no-deps wordpress
 
-echo "==> Flushing rewrite rules (throwaway wpcli container, db/wordpress untouched)..."
-# --entrypoint wp overrides the wpcli service's own entrypoint (bootstrap.sh,
-# used only for first-time install) so this runs the single wp command
-# directly instead of the extra args being silently ignored by bootstrap.sh.
-docker compose -f docker-compose.prod.yml run --rm --entrypoint wp wpcli rewrite flush --hard
+echo "==> Re-running bootstrap.sh (throwaway wpcli container, db/wordpress untouched)..."
+docker compose -f docker-compose.prod.yml run --rm wpcli
 
 echo "==> Pruning dangling images..."
 docker image prune -f
