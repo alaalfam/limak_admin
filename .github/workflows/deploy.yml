@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+# A different group name than limak_website's own "deploy-production" so
+# the two pipelines can never queue-block each other.
+concurrency:
+  group: deploy-production-admin
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+
+      - name: PHP syntax check
+        run: find wp-content/plugins/limak-headless -name "*.php" -print0 | xargs -0 -n1 php -l
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # VPS_SSH_KEY is a deploy-only key, authorized on the VPS purely to
+      # run deploy/deploy.sh over SSH (see that script's own SSH_KEY/
+      # SSH_KNOWN_HOSTS handling). Dedicated to this repo, independent of
+      # limak_website's own deploy key — a leaked secret in one pipeline
+      # doesn't compromise the other's audit trail. The host key is
+      # public info, so it's fetched fresh each run rather than stored
+      # as a secret.
+      - name: Set up SSH
+        run: |
+          mkdir -p "$HOME/.ssh"
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > "$HOME/.ssh/deploy_key"
+          chmod 600 "$HOME/.ssh/deploy_key"
+          ssh-keyscan -H 185.10.75.150 >> "$HOME/.ssh/known_hosts"
+
+      - name: Deploy to VPS
+        env:
+          SSH_KEY: /home/runner/.ssh/deploy_key
+          SSH_KNOWN_HOSTS: /home/runner/.ssh/known_hosts
+        run: bash deploy/deploy.sh
