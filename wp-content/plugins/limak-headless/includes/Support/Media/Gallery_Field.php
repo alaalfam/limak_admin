@@ -98,7 +98,7 @@ final class Gallery_Field implements Registrable {
 			<ul class="limak-gallery-field__list">
 				<?php foreach ( $images as $image ) : ?>
 					<li class="limak-gallery-field__item" data-id="<?php echo esc_attr( (string) $image['attachment_id'] ); ?>">
-						<img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" />
+						<img src="<?php echo esc_url( $image['fallbackSrc'] ); ?>" alt="<?php echo esc_attr( $image['alt']['fa'] ); ?>" />
 						<button type="button" class="limak-gallery-field__remove button-link" aria-label="<?php esc_attr_e( 'Remove image', 'limak-headless' ); ?>">&times;</button>
 					</li>
 				<?php endforeach; ?>

@@ -74,4 +74,37 @@ fi
 echo "[bootstrap] activating limak-headless plugin..."
 wp plugin activate limak-headless --path=/var/www/html --allow-root
 
+echo "[bootstrap] seeding default product categories (idempotent — skips any slug that already exists)..."
+cat > /tmp/seed-product-categories.php <<'PHP'
+<?php
+// fa names match the frontend's current messages/fa.json translations —
+// a starting point only, fully editable afterward via Products > Categories.
+$categories = [
+	'sofas'         => [ 'fa' => 'مبل', 'en' => 'Sofas' ],
+	'armchairs'     => [ 'fa' => 'صندلی راحتی', 'en' => 'Armchairs' ],
+	'lounge-chairs' => [ 'fa' => 'صندلی لانژ', 'en' => 'Lounge Chairs' ],
+	'tables'        => [ 'fa' => 'میز', 'en' => 'Tables' ],
+	'storage'       => [ 'fa' => 'بوفه و ذخیره‌سازی', 'en' => 'Storage' ],
+];
+
+foreach ( $categories as $slug => $names ) {
+	if ( term_exists( $slug, 'product_category' ) ) {
+		WP_CLI::log( "  {$slug}: already exists, skipping." );
+		continue;
+	}
+
+	$result = wp_insert_term( $names['fa'], 'product_category', [ 'slug' => $slug ] );
+
+	if ( is_wp_error( $result ) ) {
+		WP_CLI::warning( "  {$slug}: {$result->get_error_message()}" );
+		continue;
+	}
+
+	update_field( 'name_en', $names['en'], 'product_category_' . $result['term_id'] );
+	WP_CLI::log( "  {$slug}: created (term_id {$result['term_id']})." );
+}
+PHP
+wp eval-file /tmp/seed-product-categories.php --path=/var/www/html --allow-root
+rm -f /tmp/seed-product-categories.php
+
 echo "[bootstrap] done."

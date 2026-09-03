@@ -28,7 +28,11 @@ final class Product extends Post_Type {
 		return [
 			'menu_icon'     => 'dashicons-store',
 			'menu_position' => 6,
-			'supports'      => [ 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'page-attributes' ],
+			// No 'editor': the full description is bilingual (description_fa/
+			// description_en ACF repeaters, see Product_Fields), so the
+			// native content editor would just be an unused, confusing
+			// second place to write it.
+			'supports'      => [ 'title', 'excerpt', 'thumbnail', 'revisions', 'page-attributes' ],
 			'rewrite'       => [ 'slug' => 'products' ],
 			'rest_base'     => 'products',
 		];
