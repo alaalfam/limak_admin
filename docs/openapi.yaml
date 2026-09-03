@@ -20,7 +20,7 @@ servers:
     description: LIMAK Headless API
     variables:
       siteUrl:
-        default: http://localhost:8080
+        default: https://admin.limakstudio.ir
         description: Base URL of the WordPress installation.
 
 security: []

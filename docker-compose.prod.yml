@@ -45,6 +45,13 @@ services:
     volumes:
       - ./wp-content:/var/www/html/wp-content
       - wp_core:/var/www/html
+      # Swagger UI for the limak/v1 OpenAPI spec, served at
+      # admin.limakstudio.ir/docs/. Apache serves these as plain static
+      # files (WordPress's own rewrite rules only apply when the
+      # requested path doesn't already exist on disk), so this needs no
+      # nginx or WordPress changes at all — the existing catch-all
+      # proxy_pass already reaches it.
+      - ./docs:/var/www/html/docs:ro
     mem_limit: 512m
     cpus: 0.75
 
