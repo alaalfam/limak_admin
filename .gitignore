@@ -6,6 +6,15 @@ wordpress-admin-credentials.txt
 wp-content/uploads/*
 !wp-content/uploads/.gitkeep
 
+# WordPress-managed runtime scratch space for plugin/theme/core updates,
+# created and owned by www-data inside the container. Being untracked
+# (rather than ignored) broke deploy.sh's autostash: `git stash -u` can't
+# clean up a directory the deploy user (uid 1000) doesn't own, and its
+# non-zero exit on that cleanup failure aborted the whole deploy under
+# `set -e`.
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+
 # OS / editor
 .DS_Store
 Thumbs.db
