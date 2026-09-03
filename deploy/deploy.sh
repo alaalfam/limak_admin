@@ -51,7 +51,10 @@ echo "==> Restarting wordpress container..."
 docker compose -f docker-compose.prod.yml up -d --no-deps wordpress
 
 echo "==> Flushing rewrite rules (throwaway wpcli container, db/wordpress untouched)..."
-docker compose -f docker-compose.prod.yml run --rm wpcli wp rewrite flush --hard
+# --entrypoint wp overrides the wpcli service's own entrypoint (bootstrap.sh,
+# used only for first-time install) so this runs the single wp command
+# directly instead of the extra args being silently ignored by bootstrap.sh.
+docker compose -f docker-compose.prod.yml run --rm --entrypoint wp wpcli rewrite flush --hard
 
 echo "==> Pruning dangling images..."
 docker image prune -f
