@@ -15,7 +15,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    mem_limit: 400m
+    mem_limit: 512m
     cpus: 0.5
 
   wordpress:
