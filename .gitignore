@@ -1,5 +1,6 @@
 # Environment
 .env
+wordpress-admin-credentials.txt
 
 # WordPress core (installed at container runtime via the wordpress image, not vendored)
 wp-content/uploads/*
@@ -11,6 +12,10 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Composer (if added later inside the plugin)
-vendor/
+# Composer (if added later inside limak-headless itself). Scoped rather
+# than a blanket "vendor/" — advanced-custom-fields ships its own vendor/
+# as part of the plugin, and since wp-content is version-controlled and
+# bootstrap.sh skips re-downloading a plugin that's already present, an
+# excluded vendor/ there breaks ACF activation on a fresh clone.
+wp-content/plugins/limak-headless/vendor/
 composer.lock
