@@ -131,7 +131,12 @@ final class Product_Transformer {
 			return [];
 		}
 
-		$paragraphs = preg_split( '/\R{2,}/', trim( $value ) );
+		// The /u (UTF-8) modifier is required here: without it, \R matches
+		// raw byte 0x85 (PCRE's "NEL" case for \R) wherever it happens to
+		// occur as a continuation byte inside a multi-byte UTF-8 character
+		// (e.g. "م" is 0xD9 0x85) — silently corrupting Persian text by
+		// splitting mid-character.
+		$paragraphs = preg_split( '/\R{2,}/u', trim( $value ) );
 
 		return array_values( array_filter( array_map( 'trim', $paragraphs ) ) );
 	}
@@ -202,7 +207,9 @@ final class Product_Transformer {
 			return [];
 		}
 
-		return preg_split( '/\R/', trim( $value ) );
+		// See the /u note on the paragraph split above — same reason.
+
+		return preg_split( '/\R/u', trim( $value ) );
 	}
 
 	/**
