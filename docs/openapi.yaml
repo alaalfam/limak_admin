@@ -93,7 +93,7 @@ paths:
                   category: [{ id: 2, slug: living-room, name: { fa: اتاق نشیمن, en: Living Room } }]
                   materials: [{ id: 3, slug: oak, name: { fa: بلوط, en: Oak } }]
                   colors: []
-                  price: 45000000
+                  price: { fa: 288000000, en: 7200 }
                   designer: Jane Doe
                   featured: true
                   order: 0
@@ -474,7 +474,12 @@ components:
         colors:
           type: array
           items: { $ref: '#/components/schemas/BilingualTerm' }
-        price: { type: integer, nullable: true, description: "Toman. Null when not yet priced — the frontend simply omits the price line rather than showing 0." }
+        price:
+          type: object
+          description: Independent per-locale prices, not a currency conversion of a single value — each is nullable on its own (omitted from the site when not yet priced).
+          properties:
+            fa: { type: integer, nullable: true, description: "Toman, shown on the Persian site." }
+            en: { type: integer, nullable: true, description: "USD, shown on the English site." }
         designer: { type: string, nullable: true }
         featured: { type: boolean }
         order: { type: integer }

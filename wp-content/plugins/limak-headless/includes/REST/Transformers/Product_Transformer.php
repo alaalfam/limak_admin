@@ -79,7 +79,13 @@ final class Product_Transformer {
 			'category'         => self::transform_terms( $post->ID, 'product_category' ),
 			'materials'        => self::transform_terms( $post->ID, 'material' ),
 			'colors'           => self::transform_terms( $post->ID, 'color' ),
-			'price'            => self::to_nullable_int( get_field( 'price', $post->ID ) ),
+			// Independent per-locale prices, not a currency conversion of a
+			// single value — Toman for the Persian site, USD for the
+			// English site, each optional on its own.
+			'price'            => [
+				'fa' => self::to_nullable_int( get_field( 'price', $post->ID ) ),
+				'en' => self::to_nullable_int( get_field( 'price_usd', $post->ID ) ),
+			],
 			'designer'         => get_field( 'designer', $post->ID ) ?: null,
 			'featured'         => (bool) get_field( 'featured', $post->ID ),
 			'order'            => (int) $post->menu_order,
@@ -111,70 +117,92 @@ final class Product_Transformer {
 	}
 
 	/**
+	 * description_fa/description_en are a plain textarea (not a repeater —
+	 * see the note in Product_Fields), paragraphs separated by a blank
+	 * line. Splits on one-or-more blank lines so a stray extra newline
+	 * doesn't produce an empty paragraph.
+	 *
 	 * @return string[]
 	 */
-	private static function transform_paragraphs( int $post_id, string $repeater_name ): array {
-		$rows = get_field( $repeater_name, $post_id );
+	private static function transform_paragraphs( int $post_id, string $field_name ): array {
+		$value = (string) get_field( $field_name, $post_id );
 
-		if ( ! is_array( $rows ) ) {
+		if ( '' === trim( $value ) ) {
 			return [];
 		}
 
+		$paragraphs = preg_split( '/\R{2,}/', trim( $value ) );
+
+		return array_values( array_filter( array_map( 'trim', $paragraphs ) ) );
+	}
+
+	/**
+	 * finishes is a plain textarea (not a repeater — see the note in
+	 * Product_Fields), one finish per line: "fa name | en name | hex".
+	 */
+	private static function transform_finishes( int $post_id ): array {
 		return array_values(
 			array_filter(
 				array_map(
-					static fn( array $row ): string => trim( (string) ( $row['paragraph'] ?? '' ) ),
-					$rows
+					static function ( string $line ): ?array {
+						$parts = array_map( 'trim', explode( '|', $line ) );
+
+						if ( '' === ( $parts[0] ?? '' ) ) {
+							return null;
+						}
+
+						return [
+							'id'   => sanitize_title( $parts[0] ?: ( $parts[1] ?? '' ) ),
+							'name' => [
+								'fa' => $parts[0],
+								'en' => ( $parts[1] ?? '' ) ?: null,
+							],
+							'hex'  => $parts[2] ?? '',
+						];
+					},
+					self::split_lines( (string) get_field( 'finishes', $post_id ) )
 				)
 			)
 		);
 	}
 
-	private static function transform_finishes( int $post_id ): array {
-		$rows = get_field( 'finishes', $post_id );
-
-		if ( ! is_array( $rows ) ) {
-			return [];
-		}
-
+	/**
+	 * sizes is a plain textarea (not a repeater — see the note in
+	 * Product_Fields), one size per line: "fa label | en label".
+	 *
+	 * @return array{fa: string, en: ?string}[]
+	 */
+	private static function transform_sizes( int $post_id ): array {
 		return array_values(
-			array_map(
-				static function ( array $row ): array {
-					$name_fa = (string) ( $row['name'] ?? '' );
+			array_filter(
+				array_map(
+					static function ( string $line ): ?array {
+						$parts = array_map( 'trim', explode( '|', $line ) );
 
-					return [
-						'id'   => sanitize_title( $name_fa ?: (string) ( $row['name_en'] ?? '' ) ),
-						'name' => [
-							'fa' => $name_fa,
-							'en' => $row['name_en'] ?: null,
-						],
-						'hex'  => (string) ( $row['color'] ?? '' ),
-					];
-				},
-				$rows
+						if ( '' === ( $parts[0] ?? '' ) ) {
+							return null;
+						}
+
+						return [
+							'fa' => $parts[0],
+							'en' => ( $parts[1] ?? '' ) ?: null,
+						];
+					},
+					self::split_lines( (string) get_field( 'sizes', $post_id ) )
+				)
 			)
 		);
 	}
 
 	/**
-	 * @return array{fa: string, en: ?string}[]
+	 * @return string[]
 	 */
-	private static function transform_sizes( int $post_id ): array {
-		$rows = get_field( 'sizes', $post_id );
-
-		if ( ! is_array( $rows ) ) {
+	private static function split_lines( string $value ): array {
+		if ( '' === trim( $value ) ) {
 			return [];
 		}
 
-		return array_values(
-			array_map(
-				static fn( array $row ): array => [
-					'fa' => (string) ( $row['label'] ?? '' ),
-					'en' => $row['label_en'] ?: null,
-				],
-				$rows
-			)
-		);
+		return preg_split( '/\R/', trim( $value ) );
 	}
 
 	/**

@@ -79,37 +79,21 @@ final class Product_Fields implements Registrable {
 				'key'          => 'field_limak_product_description_fa',
 				'name'         => 'description_fa',
 				'label'        => __( 'Description (Persian)', 'limak-headless' ),
-				'instructions' => __( 'One row per paragraph.', 'limak-headless' ),
-				'type'         => 'repeater',
-				'layout'       => 'table',
-				'button_label' => __( 'Add Paragraph', 'limak-headless' ),
-				'sub_fields'   => [
-					[
-						'key'   => 'field_limak_product_description_fa_paragraph',
-						'name'  => 'paragraph',
-						'label' => __( 'Paragraph', 'limak-headless' ),
-						'type'  => 'textarea',
-						'rows'  => 3,
-					],
-				],
+				// A plain textarea, not a repeater: ACF's Repeater field
+				// requires ACF PRO, which this project doesn't have (same
+				// reason the gallery field is a custom meta box instead of
+				// ACF's Gallery field — see Support\Media\Gallery_Field).
+				'instructions' => __( 'Separate paragraphs with a blank line.', 'limak-headless' ),
+				'type'         => 'textarea',
+				'rows'         => 8,
 			],
 			[
 				'key'          => 'field_limak_product_description_en',
 				'name'         => 'description_en',
 				'label'        => __( 'Description (English)', 'limak-headless' ),
-				'instructions' => __( 'One row per paragraph.', 'limak-headless' ),
-				'type'         => 'repeater',
-				'layout'       => 'table',
-				'button_label' => __( 'Add Paragraph', 'limak-headless' ),
-				'sub_fields'   => [
-					[
-						'key'   => 'field_limak_product_description_en_paragraph',
-						'name'  => 'paragraph',
-						'label' => __( 'Paragraph', 'limak-headless' ),
-						'type'  => 'textarea',
-						'rows'  => 3,
-					],
-				],
+				'instructions' => __( 'Separate paragraphs with a blank line.', 'limak-headless' ),
+				'type'         => 'textarea',
+				'rows'         => 8,
 			],
 		];
 	}
@@ -124,11 +108,20 @@ final class Product_Fields implements Registrable {
 			[
 				'key'          => 'field_limak_product_price',
 				'name'         => 'price',
-				'label'        => __( 'Price (Toman)', 'limak-headless' ),
-				'instructions' => __( 'Leave empty if not yet priced — the price is simply hidden on the site.', 'limak-headless' ),
+				'label'        => __( 'Price — Persian site (Toman)', 'limak-headless' ),
+				'instructions' => __( 'Shown on the Persian site. Leave empty if not yet priced — the price is simply hidden on the site.', 'limak-headless' ),
 				'type'         => 'number',
 				'min'          => 0,
 				'step'         => 1000,
+			],
+			[
+				'key'          => 'field_limak_product_price_usd',
+				'name'         => 'price_usd',
+				'label'        => __( 'Price — English site (USD)', 'limak-headless' ),
+				'instructions' => __( 'Shown on the English site. Independent of the Toman price above — leave empty if not yet priced.', 'limak-headless' ),
+				'type'         => 'number',
+				'min'          => 0,
+				'step'         => 1,
 			],
 			[
 				'key'           => 'field_limak_product_collection',
@@ -262,53 +255,20 @@ final class Product_Fields implements Registrable {
 				'key'          => 'field_limak_product_finishes',
 				'name'         => 'finishes',
 				'label'        => __( 'Finishes', 'limak-headless' ),
-				'instructions' => __( 'Fabric/leather/wood finish swatches shown on the product detail page.', 'limak-headless' ),
-				'type'         => 'repeater',
-				'layout'       => 'table',
-				'button_label' => __( 'Add Finish', 'limak-headless' ),
-				'sub_fields'   => [
-					[
-						'key'   => 'field_limak_product_finish_name',
-						'name'  => 'name',
-						'label' => __( 'Name (Persian)', 'limak-headless' ),
-						'type'  => 'text',
-					],
-					[
-						'key'   => 'field_limak_product_finish_name_en',
-						'name'  => 'name_en',
-						'label' => __( 'Name (English)', 'limak-headless' ),
-						'type'  => 'text',
-					],
-					[
-						'key'   => 'field_limak_product_finish_color',
-						'name'  => 'color',
-						'label' => __( 'Color', 'limak-headless' ),
-						'type'  => 'color_picker',
-					],
-				],
+				// One per line, not a repeater (needs ACF PRO — see the
+				// note on description_fa above): "Persian name | English
+				// name | hex color".
+				'instructions' => __( 'Fabric/leather/wood finish swatches shown on the product detail page. One per line: Persian name | English name | hex color. Example: چرم امبر | Umber Leather | #6b4a34', 'limak-headless' ),
+				'type'         => 'textarea',
+				'rows'         => 5,
 			],
 			[
 				'key'          => 'field_limak_product_sizes',
 				'name'         => 'sizes',
 				'label'        => __( 'Sizes', 'limak-headless' ),
-				'instructions' => __( 'Optional configuration sizes (e.g. "Two-Seat", "Three-Seat"), shown on the product detail page.', 'limak-headless' ),
-				'type'         => 'repeater',
-				'layout'       => 'table',
-				'button_label' => __( 'Add Size', 'limak-headless' ),
-				'sub_fields'   => [
-					[
-						'key'   => 'field_limak_product_size_label',
-						'name'  => 'label',
-						'label' => __( 'Label (Persian)', 'limak-headless' ),
-						'type'  => 'text',
-					],
-					[
-						'key'   => 'field_limak_product_size_label_en',
-						'name'  => 'label_en',
-						'label' => __( 'Label (English)', 'limak-headless' ),
-						'type'  => 'text',
-					],
-				],
+				'instructions' => __( 'Optional configuration sizes shown on the product detail page. One per line: Persian label | English label. Example: دونفره | Two-Seat', 'limak-headless' ),
+				'type'         => 'textarea',
+				'rows'         => 4,
 			],
 		];
 	}

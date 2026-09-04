@@ -284,3 +284,89 @@ msgstr "فقط محصولات ویژه بازگردانده شوند."
 #: includes/REST/Controllers/Projects_Controller.php:109
 msgid "Project not found."
 msgstr "پروژه یافت نشد."
+
+#: includes/Fields/Attachment_Fields.php:29
+#: includes/Fields/Taxonomy_Term_Fields.php:34
+msgid "Translation"
+msgstr "ترجمه"
+
+#: includes/Fields/Attachment_Fields.php:34
+msgid "Alt Text (English)"
+msgstr "متن جایگزین تصویر (انگلیسی)"
+
+#: includes/Fields/Taxonomy_Term_Fields.php:39
+msgid "Name (English)"
+msgstr "نام (انگلیسی)"
+
+#: includes/Fields/Product_Fields.php:61
+msgid "Bilingual Content"
+msgstr "محتوای دوزبانه"
+
+#: includes/Fields/Product_Fields.php:68
+msgid "Title (English)"
+msgstr "عنوان (انگلیسی)"
+
+#: includes/Fields/Product_Fields.php:74
+msgid "Short Description (English)"
+msgstr "توضیح کوتاه (انگلیسی)"
+
+#: includes/Fields/Product_Fields.php:81
+msgid "Description (Persian)"
+msgstr "توضیحات (فارسی)"
+
+#: includes/Fields/Product_Fields.php:86
+#: includes/Fields/Product_Fields.php:94
+msgid "Separate paragraphs with a blank line."
+msgstr "پاراگراف‌ها را با یک خط خالی از هم جدا کنید."
+
+#: includes/Fields/Product_Fields.php:93
+msgid "Description (English)"
+msgstr "توضیحات (انگلیسی)"
+
+#: includes/Fields/Product_Fields.php:105
+msgid "Pricing & Collection"
+msgstr "قیمت و مجموعه"
+
+#: includes/Fields/Product_Fields.php:111
+msgid "Price — Persian site (Toman)"
+msgstr "قیمت — سایت فارسی (تومان)"
+
+#: includes/Fields/Product_Fields.php:112
+msgid "Shown on the Persian site. Leave empty if not yet priced — the price is simply hidden on the site."
+msgstr "در سایت فارسی نمایش داده می‌شود. اگر هنوز قیمتی تعیین نشده، خالی بگذارید — قیمت به‌سادگی در سایت نمایش داده نمی‌شود."
+
+#: includes/Fields/Product_Fields.php:120
+msgid "Price — English site (USD)"
+msgstr "قیمت — سایت انگلیسی (دلار)"
+
+#: includes/Fields/Product_Fields.php:121
+msgid "Shown on the English site. Independent of the Toman price above — leave empty if not yet priced."
+msgstr "در سایت انگلیسی نمایش داده می‌شود. مستقل از قیمت تومانی بالا — اگر هنوز قیمتی تعیین نشده، خالی بگذارید."
+
+#: includes/Fields/Product_Fields.php:149
+msgid "Specifications"
+msgstr "مشخصات"
+
+#: includes/Fields/Product_Fields.php:221
+msgid "Media & Links"
+msgstr "رسانه و لینک‌ها"
+
+#: includes/Fields/Product_Fields.php:251
+msgid "Detail Page Extras"
+msgstr "موارد اضافی صفحه جزئیات"
+
+#: includes/Fields/Product_Fields.php:257
+msgid "Finishes"
+msgstr "فینیش‌ها"
+
+#: includes/Fields/Product_Fields.php:261
+msgid "Fabric/leather/wood finish swatches shown on the product detail page. One per line: Persian name | English name | hex color. Example: چرم امبر | Umber Leather | #6b4a34"
+msgstr "نمونه‌های فینیش پارچه/چرم/چوب که در صفحه جزئیات محصول نمایش داده می‌شوند. در هر خط: نام فارسی | نام انگلیسی | کد رنگ. مثال: چرم امبر | Umber Leather | #6b4a34"
+
+#: includes/Fields/Product_Fields.php:268
+msgid "Sizes"
+msgstr "اندازه‌ها"
+
+#: includes/Fields/Product_Fields.php:269
+msgid "Optional configuration sizes shown on the product detail page. One per line: Persian label | English label. Example: دونفره | Two-Seat"
+msgstr "اندازه‌های اختیاری که در صفحه جزئیات محصول نمایش داده می‌شوند. در هر خط: برچسب فارسی | برچسب انگلیسی. مثال: دونفره | Two-Seat"
