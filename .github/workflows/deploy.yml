@@ -24,6 +24,9 @@ jobs:
       - name: PHP syntax check
         run: find wp-content/plugins/limak-headless -name "*.php" -print0 | xargs -0 -n1 php -l
 
+      - name: OpenAPI coverage check
+        run: php scripts/check-openapi-coverage.php
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
