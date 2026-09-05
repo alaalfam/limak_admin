@@ -47,16 +47,27 @@ final class Products_Controller extends WP_REST_Controller implements Registrabl
 			]
 		);
 
+		// `[a-z0-9-]+` used to be the only pattern here, which silently
+		// excluded any slug WordPress had percent-encoded (its default
+		// behaviour for a non-Latin title with no manually-typed
+		// permalink — e.g. a Persian-only product title) — such a
+		// request never even reached get_item(), it 404'd at the
+		// routing layer with a generic rest_no_route. `[^/]+` accepts a
+		// single path segment of any kind — numeric ID or slug — and
+		// get_item()/get_related() branch on which one it is. The
+		// frontend now links to products by their numeric ID (stable
+		// and language-independent); slug lookup remains for anything
+		// still using it.
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/(?P<slug>[a-z0-9-]+)',
+			'/' . $this->rest_base . '/(?P<id_or_slug>[^/]+)',
 			[
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_item' ],
 					'permission_callback' => '__return_true',
 					'args'                => [
-						'slug' => [
+						'id_or_slug' => [
 							'type'     => 'string',
 							'required' => true,
 						],
@@ -67,18 +78,18 @@ final class Products_Controller extends WP_REST_Controller implements Registrabl
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/(?P<slug>[a-z0-9-]+)/related',
+			'/' . $this->rest_base . '/(?P<id_or_slug>[^/]+)/related',
 			[
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_related' ],
 					'permission_callback' => '__return_true',
 					'args'                => [
-						'slug'  => [
+						'id_or_slug' => [
 							'type'     => 'string',
 							'required' => true,
 						],
-						'limit' => [
+						'limit'      => [
 							'type'    => 'integer',
 							'default' => 4,
 							'minimum' => 1,
@@ -88,6 +99,33 @@ final class Products_Controller extends WP_REST_Controller implements Registrabl
 				],
 			]
 		);
+	}
+
+	/**
+	 * A purely-numeric path segment is treated as the product's post ID
+	 * (stable, unique, assigned automatically at creation regardless of
+	 * title language); anything else is looked up as the post_name slug,
+	 * same as before.
+	 */
+	private function find_product( string $id_or_slug ): ?\WP_Post {
+		if ( ctype_digit( $id_or_slug ) ) {
+			$post = get_post( (int) $id_or_slug );
+
+			return ( $post instanceof \WP_Post && Product::SLUG === $post->post_type && 'publish' === $post->post_status )
+				? $post
+				: null;
+		}
+
+		$query = new WP_Query(
+			[
+				'post_type'      => Product::SLUG,
+				'name'           => $id_or_slug,
+				'post_status'    => 'publish',
+				'posts_per_page' => 1,
+			]
+		);
+
+		return $query->posts[0] ?? null;
 	}
 
 	public function get_items( $request ) {
@@ -124,16 +162,7 @@ final class Products_Controller extends WP_REST_Controller implements Registrabl
 	}
 
 	public function get_item( $request ) {
-		$query = new WP_Query(
-			[
-				'post_type'      => Product::SLUG,
-				'name'           => $request->get_param( 'slug' ),
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-			]
-		);
-
-		$post = $query->posts[0] ?? null;
+		$post = $this->find_product( $request->get_param( 'id_or_slug' ) );
 
 		if ( ! $post ) {
 			return new WP_Error(
@@ -147,16 +176,7 @@ final class Products_Controller extends WP_REST_Controller implements Registrabl
 	}
 
 	public function get_related( $request ) {
-		$query = new WP_Query(
-			[
-				'post_type'      => Product::SLUG,
-				'name'           => $request->get_param( 'slug' ),
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-			]
-		);
-
-		$post = $query->posts[0] ?? null;
+		$post = $this->find_product( $request->get_param( 'id_or_slug' ) );
 
 		if ( ! $post ) {
 			return new WP_Error(

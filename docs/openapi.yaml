@@ -98,13 +98,13 @@ paths:
                   featured: true
                   order: 0
 
-  /products/{slug}:
+  /products/{id_or_slug}:
     get:
       tags: [Products]
       operationId: getProduct
       summary: Get a single product
       parameters:
-        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/ProductIdOrSlug'
       responses:
         '200':
           description: The product.
@@ -136,14 +136,14 @@ paths:
                   slug: armchairs
                   name: { fa: صندلی راحتی, en: Armchairs }
 
-  /products/{slug}/related:
+  /products/{id_or_slug}/related:
     get:
       tags: [Products]
       operationId: getRelatedProducts
       summary: Get related products
       description: Products sharing a category with the given product; falls back to products in the same collection if no category overlap exists.
       parameters:
-        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/ProductIdOrSlug'
         - name: limit
           in: query
           schema: { type: integer, default: 4, minimum: 1, maximum: 20 }
@@ -352,6 +352,12 @@ components:
       name: slug
       in: path
       required: true
+      schema: { type: string }
+    ProductIdOrSlug:
+      name: id_or_slug
+      in: path
+      required: true
+      description: Either the product's numeric post ID (preferred — stable regardless of title language) or its slug.
       schema: { type: string }
 
   headers:
