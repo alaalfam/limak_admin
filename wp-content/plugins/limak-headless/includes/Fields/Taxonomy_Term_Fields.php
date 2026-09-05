@@ -13,8 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Adds an English name field to each product-related taxonomy's term-edit
- * screen. The term's native `name` stays Persian (unchanged); this is the
- * only extra field needed since a taxonomy term has nothing else the
+ * screen, and to the two native blog taxonomies (category, post_tag) used
+ * by articles. The term's native `name` stays Persian (unchanged); this is
+ * the only extra field needed since a taxonomy term has nothing else the
  * frontend consumes beyond id/slug/name.
  */
 final class Taxonomy_Term_Fields implements Registrable {
@@ -60,6 +61,20 @@ final class Taxonomy_Term_Fields implements Registrable {
 							'param'    => 'taxonomy',
 							'operator' => '==',
 							'value'    => Color::SLUG,
+						],
+					],
+					[
+						[
+							'param'    => 'taxonomy',
+							'operator' => '==',
+							'value'    => 'category',
+						],
+					],
+					[
+						[
+							'param'    => 'taxonomy',
+							'operator' => '==',
+							'value'    => 'post_tag',
 						],
 					],
 				],

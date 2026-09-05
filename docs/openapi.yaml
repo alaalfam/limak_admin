@@ -104,7 +104,7 @@ paths:
       operationId: getProduct
       summary: Get a single product
       parameters:
-        - $ref: '#/components/parameters/ProductIdOrSlug'
+        - $ref: '#/components/parameters/IdOrSlug'
       responses:
         '200':
           description: The product.
@@ -143,7 +143,7 @@ paths:
       summary: Get related products
       description: Products sharing a category with the given product; falls back to products in the same collection if no category overlap exists.
       parameters:
-        - $ref: '#/components/parameters/ProductIdOrSlug'
+        - $ref: '#/components/parameters/IdOrSlug'
         - name: limit
           in: query
           schema: { type: integer, default: 4, minimum: 1, maximum: 20 }
@@ -260,13 +260,13 @@ paths:
                 type: array
                 items: { $ref: '#/components/schemas/PostSummary' }
 
-  /blog/{slug}:
+  /blog/{id_or_slug}:
     get:
       tags: [Blog]
       operationId: getBlogPost
       summary: Get a single blog post
       parameters:
-        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/IdOrSlug'
       responses:
         '200':
           description: The blog post.
@@ -353,11 +353,11 @@ components:
       in: path
       required: true
       schema: { type: string }
-    ProductIdOrSlug:
+    IdOrSlug:
       name: id_or_slug
       in: path
       required: true
-      description: Either the product's numeric post ID (preferred — stable regardless of title language) or its slug.
+      description: Either the item's numeric post ID (preferred — stable regardless of title language) or its slug.
       schema: { type: string }
 
   headers:
@@ -423,17 +423,9 @@ components:
         id: { type: integer }
         url: { type: string, format: uri }
 
-    Term:
-      type: object
-      description: Used by non-bilingual taxonomies (currently blog categories/tags).
-      properties:
-        id: { type: integer }
-        name: { type: string }
-        slug: { type: string }
-
     BilingualTerm:
       type: object
-      description: Used by product-related taxonomies (product_category, material, color) — the term's native name is Persian; English is a companion ACF term field.
+      description: Used by every taxonomy in this API (product_category, material, color, and the blog's category/post_tag) — the term's native name is Persian; English is a companion ACF term field.
       properties:
         id: { type: integer }
         slug: { type: string }
@@ -576,26 +568,135 @@ components:
 
     PostSummary:
       type: object
+      description: "A blog post (the frontend's \"Journal\" section). Persian is native (post_title, post_excerpt, category/post_tag term names); English lives in companion ACF fields — same split as Product."
       properties:
         id: { type: integer }
-        title: { type: string }
+        title: { $ref: '#/components/schemas/LocalizedText' }
         slug: { type: string }
-        image: { $ref: '#/components/schemas/Image' }
-        excerpt: { type: string }
-        date: { type: string, format: date }
-        categories:
+        heroImage: { $ref: '#/components/schemas/Image' }
+        excerpt: { $ref: '#/components/schemas/LocalizedText' }
+        category:
           type: array
-          items: { $ref: '#/components/schemas/Term' }
+          description: WordPress's real multi-term model — usually one entry, but a post can have more than one category.
+          items: { $ref: '#/components/schemas/BilingualTerm' }
+        tags:
+          type: array
+          items: { $ref: '#/components/schemas/BilingualTerm' }
+        date: { type: string, format: date }
+        author: { type: string, nullable: true }
+        featured: { type: boolean }
 
     PostDetail:
       allOf:
         - $ref: '#/components/schemas/PostSummary'
         - type: object
           properties:
-            content: { type: string, description: Rendered HTML. }
-            tags:
+            metaDescription:
+              type: object
+              description: "SEO search-result snippet — distinct from excerpt, which is on-page card copy. Required per-locale in wp-admin, so null only for a post saved before the field existed."
+              properties:
+                fa: { type: string, nullable: true }
+                en: { type: string, nullable: true }
+            body:
               type: array
-              items: { $ref: '#/components/schemas/Term' }
+              description: "The structured, bilingual article body — see Support/Content/Block_Parser.php."
+              items: { $ref: '#/components/schemas/PostBlock' }
+            relatedSlugs:
+              type: array
+              description: Explicit editor picks only (the `related_posts` field) — empty when none were picked, which the frontend already handles by falling back to other posts in the same category on its own.
+              items: { type: string }
+
+    PostBlock:
+      description: One block of the article body. `type` discriminates which of the other properties are present.
+      oneOf:
+        - $ref: '#/components/schemas/PostBlockParagraph'
+        - $ref: '#/components/schemas/PostBlockHeading'
+        - $ref: '#/components/schemas/PostBlockImage'
+        - $ref: '#/components/schemas/PostBlockImageText'
+        - $ref: '#/components/schemas/PostBlockQuote'
+        - $ref: '#/components/schemas/PostBlockHighlight'
+        - $ref: '#/components/schemas/PostBlockList'
+        - $ref: '#/components/schemas/PostBlockCta'
+      discriminator:
+        propertyName: type
+        mapping:
+          paragraph: '#/components/schemas/PostBlockParagraph'
+          heading: '#/components/schemas/PostBlockHeading'
+          image: '#/components/schemas/PostBlockImage'
+          imageText: '#/components/schemas/PostBlockImageText'
+          quote: '#/components/schemas/PostBlockQuote'
+          highlight: '#/components/schemas/PostBlockHighlight'
+          list: '#/components/schemas/PostBlockList'
+          cta: '#/components/schemas/PostBlockCta'
+
+    PostBlockParagraph:
+      type: object
+      properties:
+        type: { type: string, enum: [paragraph] }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+
+    PostBlockHeading:
+      type: object
+      properties:
+        type: { type: string, enum: [heading] }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+
+    PostBlockHighlight:
+      type: object
+      description: "Authored as its own [limak_highlight]...[/limak_highlight] paragraph/line — no native block-editor equivalent."
+      properties:
+        type: { type: string, enum: [highlight] }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+
+    PostBlockImage:
+      type: object
+      properties:
+        type: { type: string, enum: [image] }
+        image:
+          description: An Image, plus an optional caption (present only when the source image/figure had one).
+          allOf:
+            - $ref: '#/components/schemas/Image'
+            - type: object
+              properties:
+                caption: { $ref: '#/components/schemas/LocalizedText' }
+        fullWidth: { type: boolean }
+
+    PostBlockImageText:
+      type: object
+      description: "Authored as its own [limak_imagetext id=\"123\" side=\"start\"]...[/limak_imagetext] paragraph/line — no native block-editor equivalent."
+      properties:
+        type: { type: string, enum: [imageText] }
+        image: { $ref: '#/components/schemas/Image' }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+        imageSide: { type: string, enum: [start, end] }
+
+    PostBlockQuote:
+      type: object
+      properties:
+        type: { type: string, enum: [quote] }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+        attribution:
+          type: object
+          nullable: true
+          properties:
+            fa: { type: string }
+            en: { type: string }
+
+    PostBlockList:
+      type: object
+      properties:
+        type: { type: string, enum: [list] }
+        style: { type: string, enum: [numbered, bullet] }
+        items: { $ref: '#/components/schemas/LocalizedList' }
+
+    PostBlockCta:
+      type: object
+      description: "Authored as its own [limak_cta href=\"/contact\" label=\"...\"]...[/limak_cta] paragraph/line — no native block-editor equivalent."
+      properties:
+        type: { type: string, enum: [cta] }
+        text: { $ref: '#/components/schemas/LocalizedText' }
+        ctaLabel: { $ref: '#/components/schemas/LocalizedText' }
+        href: { type: string }
 
     SearchResult:
       description: A ProductSummary, ProjectSummary or PostSummary, tagged with its content type.

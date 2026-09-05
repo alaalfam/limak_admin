@@ -88,6 +88,7 @@ final class Limak_Headless_Plugin {
 			new \Limak\Headless\Support\Media\Image_Variants(),
 			new \Limak\Headless\Fields\Product_Fields(),
 			new \Limak\Headless\Fields\Project_Fields(),
+			new \Limak\Headless\Fields\Post_Fields(),
 			new \Limak\Headless\Fields\Taxonomy_Term_Fields(),
 			new \Limak\Headless\Fields\Attachment_Fields(),
 			new \Limak\Headless\Support\Nav_Menus(),

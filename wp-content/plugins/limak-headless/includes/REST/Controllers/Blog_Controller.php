@@ -43,16 +43,22 @@ final class Blog_Controller extends WP_REST_Controller implements Registrable {
 			]
 		);
 
+		// See Products_Controller for why this isn't `[a-z0-9-]+`: that
+		// pattern can never match a slug WordPress percent-encoded (its
+		// default behaviour for a non-Latin title with no manually-typed
+		// permalink), so a purely-numeric segment is tried as the post ID
+		// (stable regardless of title language) before falling back to
+		// the slug lookup.
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/(?P<slug>[a-z0-9-]+)',
+			'/' . $this->rest_base . '/(?P<id_or_slug>[^/]+)',
 			[
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_item' ],
 					'permission_callback' => '__return_true',
 					'args'                => [
-						'slug' => [
+						'id_or_slug' => [
 							'type'     => 'string',
 							'required' => true,
 						],
@@ -60,6 +66,27 @@ final class Blog_Controller extends WP_REST_Controller implements Registrable {
 				],
 			]
 		);
+	}
+
+	private function find_post( string $id_or_slug ): ?\WP_Post {
+		if ( ctype_digit( $id_or_slug ) ) {
+			$post = get_post( (int) $id_or_slug );
+
+			return ( $post instanceof \WP_Post && 'post' === $post->post_type && 'publish' === $post->post_status )
+				? $post
+				: null;
+		}
+
+		$query = new WP_Query(
+			[
+				'post_type'      => 'post',
+				'name'           => $id_or_slug,
+				'post_status'    => 'publish',
+				'posts_per_page' => 1,
+			]
+		);
+
+		return $query->posts[0] ?? null;
 	}
 
 	public function get_items( $request ) {
@@ -94,16 +121,7 @@ final class Blog_Controller extends WP_REST_Controller implements Registrable {
 	}
 
 	public function get_item( $request ) {
-		$query = new WP_Query(
-			[
-				'post_type'      => 'post',
-				'name'           => $request->get_param( 'slug' ),
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-			]
-		);
-
-		$post = $query->posts[0] ?? null;
+		$post = $this->find_post( $request->get_param( 'id_or_slug' ) );
 
 		if ( ! $post ) {
 			return new WP_Error(

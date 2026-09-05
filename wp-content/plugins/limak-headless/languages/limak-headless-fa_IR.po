@@ -390,3 +390,39 @@ msgstr "اندازه‌ها"
 #: includes/Fields/Product_Fields.php:269
 msgid "Optional configuration sizes shown on the product detail page. One per line: Persian label | English label. Example: دونفره | Two-Seat"
 msgstr "اندازه‌های اختیاری که در صفحه جزئیات محصول نمایش داده می‌شوند. در هر خط: برچسب فارسی | برچسب انگلیسی. مثال: دونفره | Two-Seat"
+
+#: includes/Fields/Post_Fields.php:32
+msgid "Article Details"
+msgstr "جزئیات مقاله"
+
+#: includes/Fields/Post_Fields.php:63
+msgid "Excerpt (English)"
+msgstr "خلاصه (انگلیسی)"
+
+#: includes/Fields/Post_Fields.php:69
+msgid "Body Content"
+msgstr "محتوای بدنه"
+
+#: includes/Fields/Post_Fields.php:71
+msgid "The Persian body is the editor above (the regular block editor) — use Paragraph, Heading, Quote, List and Image blocks; they are read and matched up with the English body below by their order. For a highlighted callout, an image-with-text side-by-side block, or a call-to-action button, type a shortcode as its own paragraph in both bodies: [limak_highlight]text[/limak_highlight], [limak_imagetext id=\"123\" side=\"start\"]text[/limak_imagetext] (id is the image's Media Library attachment ID), or [limak_cta href=\"/contact\" label=\"Button label\"]text[/limak_cta]."
+msgstr "بدنه‌ی فارسی همان ویرایشگر بالاست (ویرایشگر بلوکی معمول) — از بلوک‌های پاراگراف، تیتر، نقل‌قول، لیست و تصویر استفاده کنید؛ این‌ها بر اساس ترتیبشان با بدنه‌ی انگلیسی زیر جفت می‌شوند. برای یک جعبه‌ی هایلایت‌شده، بلوک تصویر-کنار-متن، یا دکمه‌ی دعوت‌به‌اقدام، یک شورت‌کد را به‌عنوان یک پاراگراف مستقل در هر دو بدنه بنویسید: [limak_highlight]متن[/limak_highlight]، [limak_imagetext id=\"123\" side=\"start\"]متن[/limak_imagetext] (id همان شناسه‌ی تصویر در کتابخانه رسانه است)، یا [limak_cta href=\"/contact\" label=\"برچسب دکمه\"]متن[/limak_cta]."
+
+#: includes/Fields/Post_Fields.php:78
+msgid "Body (English)"
+msgstr "بدنه (انگلیسی)"
+
+#: includes/Fields/Post_Fields.php:79
+msgid "Must have the same number and order of paragraphs/headings/images/etc. as the Persian body above — they are paired up by position."
+msgstr "باید دقیقاً همان تعداد و ترتیب پاراگراف‌ها/تیترها/تصاویر و غیره را نسبت به بدنه‌ی فارسی بالا داشته باشد — این‌ها بر اساس موقعیت با هم جفت می‌شوند."
+
+#: includes/Fields/Post_Fields.php:130
+msgid "Article"
+msgstr "مقاله"
+
+#: includes/Fields/Post_Fields.php:145
+msgid "Related Articles"
+msgstr "مقالات مرتبط"
+
+#: includes/Fields/Post_Fields.php:146
+msgid "Optional — pick specific articles to show as related. Leave empty to fall back to other articles in the same category."
+msgstr "اختیاری — مقالات خاصی را برای نمایش به‌عنوان مرتبط انتخاب کنید. برای بازگشت خودکار به سایر مقالات همان دسته‌بندی، خالی بگذارید."
