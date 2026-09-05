@@ -341,6 +341,14 @@ final class Block_Parser {
 	 * [limak_imagetext id="123" side="start"]text[/limak_imagetext].
 	 */
 	private static function match_shortcode( string $text ): ?array {
+		// The wysiwyg field's editor (and WordPress's own save-time
+		// texturizing) turns straight quotes into "smart" ones — a
+		// closing quote right after a digit even becomes a prime mark
+		// (7" -> 7″) rather than a right double quote. Normalize back to
+		// a plain " before matching, or every shortcode typed by hand
+		// through the actual editor UI would silently fail to parse.
+		$text = strtr( $text, [ "\u{201C}" => '"', "\u{201D}" => '"', "\u{2033}" => '"' ] );
+
 		if ( ! preg_match( '/^\[limak_(highlight|cta|imagetext)((?:\s+[a-z_]+="[^"]*")*)\s*\](.*)\[\/limak_\1\]$/su', $text, $m ) ) {
 			return null;
 		}
