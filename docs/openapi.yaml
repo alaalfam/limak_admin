@@ -499,6 +499,12 @@ components:
               type: array
               items: { $ref: '#/components/schemas/Image' }
             description: { $ref: '#/components/schemas/LocalizedList' }
+            metaDescription:
+              type: object
+              description: "SEO search-result snippet — distinct from shortDescription, which is on-page card copy. Required per-locale in wp-admin, so null only for a product saved before the field existed."
+              properties:
+                fa: { type: string, nullable: true }
+                en: { type: string, nullable: true }
             collection: { $ref: '#/components/schemas/CollectionRef' }
             woodType: { type: string, nullable: true }
             fabricType: { type: string, nullable: true }

@@ -36,6 +36,7 @@ final class Product_Fields implements Registrable {
 				'title'    => __( 'Product Details', 'limak-headless' ),
 				'fields'   => array_merge(
 					$this->bilingual_content_fields(),
+					$this->seo_fields(),
 					$this->pricing_fields(),
 					$this->specification_fields(),
 					$this->media_fields(),
@@ -94,6 +95,46 @@ final class Product_Fields implements Registrable {
 				'instructions' => __( 'Separate paragraphs with a blank line.', 'limak-headless' ),
 				'type'         => 'textarea',
 				'rows'         => 8,
+			],
+		];
+	}
+
+	/**
+	 * Meta description is deliberately its own field, separate from the
+	 * short description above: the short description is on-site copy
+	 * (shown on the product card), written for a visitor already looking
+	 * at the page. A meta description is written for someone who hasn't
+	 * clicked yet — it needs to work as a search-result snippet, which
+	 * often means different phrasing/length constraints (~150-160
+	 * characters) than what reads best on the card itself. Required on
+	 * both locales so a new product can't be published without one.
+	 */
+	private function seo_fields(): array {
+		return [
+			[
+				'key'   => 'field_limak_product_tab_seo',
+				'label' => __( 'SEO', 'limak-headless' ),
+				'type'  => 'tab',
+			],
+			[
+				'key'          => 'field_limak_product_meta_description_fa',
+				'name'         => 'meta_description_fa',
+				'label'        => __( 'Meta Description (Persian)', 'limak-headless' ),
+				'instructions' => __( 'Shown as the search-result snippet on the Persian site. Aim for about 150-160 characters.', 'limak-headless' ),
+				'type'         => 'textarea',
+				'rows'         => 2,
+				'maxlength'    => 160,
+				'required'     => 1,
+			],
+			[
+				'key'          => 'field_limak_product_meta_description_en',
+				'name'         => 'meta_description_en',
+				'label'        => __( 'Meta Description (English)', 'limak-headless' ),
+				'instructions' => __( 'Shown as the search-result snippet on the English site. Aim for about 150-160 characters.', 'limak-headless' ),
+				'type'         => 'textarea',
+				'rows'         => 2,
+				'maxlength'    => 160,
+				'required'     => 1,
 			],
 		];
 	}

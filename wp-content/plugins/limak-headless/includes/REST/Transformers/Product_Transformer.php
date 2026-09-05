@@ -41,21 +41,30 @@ final class Product_Transformer {
 		return array_merge(
 			self::base_fields( $post ),
 			[
-				'gallery'     => Image_Resolver::resolve_many( $gallery->get_attachment_ids( $post->ID ) ),
-				'description' => [
+				'gallery'         => Image_Resolver::resolve_many( $gallery->get_attachment_ids( $post->ID ) ),
+				'description'     => [
 					'fa' => self::transform_paragraphs( $post->ID, 'description_fa' ),
 					'en' => self::transform_paragraphs( $post->ID, 'description_en' ),
 				],
-				'collection'  => self::transform_collection( $collection_id ),
-				'woodType'    => get_field( 'wood_type', $post->ID ) ?: null,
-				'fabricType'  => get_field( 'fabric_type', $post->ID ) ?: null,
-				'dimensions'  => self::transform_dimensions( $post->ID ),
-				'finishes'    => self::transform_finishes( $post->ID ),
-				'sizes'       => self::transform_sizes( $post->ID ),
-				'year'        => self::to_nullable_int( get_field( 'year', $post->ID ) ),
-				'videoUrl'    => get_field( 'video_url', $post->ID ) ?: null,
-				'modelUrl'    => get_field( 'model_3d_url', $post->ID ) ?: null,
-				'catalogPdf'  => self::transform_file( get_field( 'catalog_pdf', $post->ID ) ),
+				// Distinct from shortDescription: written for a search
+				// snippet, not the product card — see the note in
+				// Product_Fields. Required on both locales, so this
+				// should only ever be null for a product created before
+				// the field existed and not yet re-saved.
+				'metaDescription' => [
+					'fa' => get_field( 'meta_description_fa', $post->ID ) ?: null,
+					'en' => get_field( 'meta_description_en', $post->ID ) ?: null,
+				],
+				'collection'      => self::transform_collection( $collection_id ),
+				'woodType'        => get_field( 'wood_type', $post->ID ) ?: null,
+				'fabricType'      => get_field( 'fabric_type', $post->ID ) ?: null,
+				'dimensions'      => self::transform_dimensions( $post->ID ),
+				'finishes'        => self::transform_finishes( $post->ID ),
+				'sizes'           => self::transform_sizes( $post->ID ),
+				'year'            => self::to_nullable_int( get_field( 'year', $post->ID ) ),
+				'videoUrl'        => get_field( 'video_url', $post->ID ) ?: null,
+				'modelUrl'        => get_field( 'model_3d_url', $post->ID ) ?: null,
+				'catalogPdf'      => self::transform_file( get_field( 'catalog_pdf', $post->ID ) ),
 			]
 		);
 	}

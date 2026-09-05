@@ -323,6 +323,26 @@ msgstr "پاراگراف‌ها را با یک خط خالی از هم جدا ک
 msgid "Description (English)"
 msgstr "توضیحات (انگلیسی)"
 
+#: includes/Fields/Product_Fields.php:132
+msgid "SEO"
+msgstr "سئو"
+
+#: includes/Fields/Product_Fields.php:138
+msgid "Meta Description (Persian)"
+msgstr "توضیحات متا (فارسی)"
+
+#: includes/Fields/Product_Fields.php:139
+msgid "Shown as the search-result snippet on the Persian site. Aim for about 150-160 characters."
+msgstr "به‌عنوان خلاصه‌ی نتیجه‌ی جست‌وجو در سایت فارسی نمایش داده می‌شود. طول پیشنهادی حدود ۱۵۰ تا ۱۶۰ کاراکتر است."
+
+#: includes/Fields/Product_Fields.php:147
+msgid "Meta Description (English)"
+msgstr "توضیحات متا (انگلیسی)"
+
+#: includes/Fields/Product_Fields.php:148
+msgid "Shown as the search-result snippet on the English site. Aim for about 150-160 characters."
+msgstr "به‌عنوان خلاصه‌ی نتیجه‌ی جست‌وجو در سایت انگلیسی نمایش داده می‌شود. طول پیشنهادی حدود ۱۵۰ تا ۱۶۰ کاراکتر است."
+
 #: includes/Fields/Product_Fields.php:105
 msgid "Pricing & Collection"
 msgstr "قیمت و مجموعه"
